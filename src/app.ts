@@ -64,7 +64,7 @@ function renderQuotes(page: number): void {
     requestAnimationFrame(() => {
       container.innerHTML = '';
       quotesCache[page].forEach((quote) => {
-        const CopyWord = `✍️ Word: ${quote.word}\n📚 Definition: ${quote.definition}\n🗣 Pronunciation:: ${quote.pronunciation}`;
+        const CopyWord = `✍️ Word: ${quote.word}\n📚 Definition: ${quote.definition}\n🗣 Pronunciation: ${quote.pronunciation}`;
         const card = document.createElement('div');
         card.className = 'box';
 
