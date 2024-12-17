@@ -1,0 +1,235 @@
+@import 'bulma/css/bulma.css';
+
+html, body {
+  min-height: 100vh;
+  margin: 0;
+  padding: 0;
+  overflow-x: hidden;
+  font-family: "Geist Mono", monospace;
+}
+
+body {
+  background: #dff9fb;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  padding-bottom: 20px;
+}
+
+.section {
+  padding: 2rem;
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+}
+.box {
+  position: relative;
+  background: #833471;
+  border: 1px solid #B33771;
+  color: #F8EFBA;
+  margin-bottom: 10px;
+  border-radius: 20px;
+  padding: 50px;
+  padding-top: 60px;
+  padding-bottom: 50px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+  font-family: "Geist Mono", monospace;
+  letter-spacing: .04em;
+
+}
+.copy-btn {
+  position: absolute;
+  top: 5px;
+  right: 1px;
+  padding: 5px 10px;
+  background-color: transparent;
+  border: none;
+  color: #BDC581;
+  cursor: pointer;
+  font-family: "Geist Mono", monospace;
+  font-weight: bold;
+  font-size: 1rem;
+  transition: transform 0.3s ease;
+  z-index: 10;
+}
+
+.copy-btn:hover {
+  transform: scale(1.1);
+}
+
+  .quote-text {
+    font-size: 16px;
+    font-family: "Geist Mono", monospace;
+    font-weight: 600;
+    line-height: 1.6;
+    margin-bottom: 40px;
+    text-align: left;
+    word-wrap: break-word;
+  }
+  .title {
+    color: #1d1702;
+    font-family: "Geist Mono", monospace;
+    text-align: center;
+  }
+  .page-button {
+    padding: 10px 10px;
+    background-color: #3498db;
+    font-family: "Geist Mono", monospace;
+    color: white;
+    border: none;
+    border-radius: 10px;
+    font-size: 15px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+  }
+  
+  #page-button:hover {
+    background-color: #2980b9;
+  }
+.pagination-container {
+  display: flex;
+  justify-content: center;
+  gap: 1rem;
+  padding: 1rem 0;
+}
+.pagination-container .button:disabled {
+  opacity: 0.5;
+}
+.page-button:disabled {
+  cursor: not-allowed;
+  opacity: 0.5;
+  filter: blur(1px);
+}
+.page-button.blurred {
+  filter: blur(1px);
+  opacity: 0.5;
+}
+.page-button:not(:disabled) {
+  opacity: 1;
+  filter: none;
+}
+.toggle-container {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 5px;
+}
+
+.toggle-switch {
+  position: relative;
+	display: inline-block;
+	width: 50px;
+	height: 25px;
+}
+
+.toggle-switch input {
+  opacity: 0;
+  width: 0;
+  height: 0;
+}
+
+.slider {
+  position: absolute;
+	cursor: pointer;
+	top: 0;
+	left: 0;
+	right: 0;
+	bottom: 0;
+	background-color: #ff4d4d;
+	transition: 0.4s;
+	border-radius: 34px;
+}
+
+.slider:before {
+  position: absolute;
+	content: "";
+	height: 19px;
+	width: 19px;
+	left: 3px;
+	bottom: 3px;
+	background-color: white;
+	transition: 0.4s;
+	border-radius: 50%;
+}
+
+.toggle-switch input:checked + .slider {
+  background-color: #7bed9f;
+}
+
+.toggle-switch input:checked + .slider:before {
+  transform: translateX(24px);
+}
+
+body.has-background-dark {
+  background: #150e1a;
+  color: #f7d794;
+}
+
+body.has-background-dark .box {
+  background-image: linear-gradient(to right top, #32072b, #290924, #21081d, #1a0617, #10030e);
+  border: 1px solid #9a74f1;
+}
+
+body.has-background-dark .quote-text {
+  color: white;
+}
+
+body.has-background-dark .title {
+  color: rgb(240, 240, 64);
+}
+
+body.has-background-dark .copy-btn {
+  color: #fff200;
+}
+body.has-background-dark .page-button {
+  background-color: #ea98f5;
+  color: #50133e;
+}
+.spinner {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  text-align: center;
+  z-index: 9999;
+}
+
+.spinner.is-hidden {
+  display: none;
+}
+
+.spinner-border {
+  border: 4px solid rgba(7, 105, 235, 0.3);
+  border-top: 4px solid #f1c40f;
+  border-radius: 50%;
+  width: 50px;
+  height: 50px;
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+.is-hidden {
+  display: none;
+}
+input {
+  font-family: "Geist Mono", monospace;
+}
+.input {
+  font-family: "Geist Mono", monospace;
+}
+.notification {
+  font-family: "Geist Mono", monospace;
+}
+#page-info {
+  color: #833471;
+}
+body.has-background-dark #page-info {
+  color: rgb(240, 240, 64);
+}
