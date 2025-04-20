@@ -13,7 +13,7 @@
   "author": "Santhosh Veer",
   "license": "MIT",
   "devDependencies": {
-    "bulma": "^1.0.3",
+    "bulma": "^1.0.4",
     "typescript": "^5.8.3",
     "vite": "^6.2.6"
   }
