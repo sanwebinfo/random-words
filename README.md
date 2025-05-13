@@ -33,7 +33,7 @@ pnpm build
 pnpm preview
 ```
 
-- Add New Words to JSON database `/src/data/words.json`
+- Add New Words to JSON database `/public/words.json`
 - Modifications: `src/app.ts` and `src/index.html`
 - UI: `/src/styles/main.css`  
 

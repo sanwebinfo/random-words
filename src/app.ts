@@ -1,5 +1,3 @@
-import quotes from '.././src/data/words.json';
-
 interface Quote {
   id: number;
   word: string;
@@ -10,15 +8,30 @@ interface Quote {
 const quotesPerPage = 6;
 let currentPage = parseInt(localStorage.getItem('currentPage') || '1', 10);
 const quotesCache: Record<number, Quote[]> = {};
+let quotes: Quote[] = [];
 
-// Helper: Fetch a chunk of quotes based on start and end indexes
+// Fetch words.json via API
+async function loadQuotes(): Promise<Quote[]> {
+  try {
+    const response = await fetch('/words.json');
+    if (!response.ok) {
+      throw new Error('Failed to fetch words.json');
+    }
+    const data: Quote[] = await response.json();
+    return data;
+  } catch (error) {
+    console.error('Error loading quotes:', error);
+    return [];
+  }
+}
+
+// Fetch a random shuffled chunk
 function fetchQuotesChunk(startIndex: number, endIndex: number): Quote[] {
-  // Shuffle the quotes array and return a chunk
-  const shuffledQuotes = [...quotes].sort(() => 0.5 - Math.random()); // Random shuffle
+  const shuffledQuotes = [...quotes].sort(() => 0.5 - Math.random());
   return shuffledQuotes.slice(startIndex, endIndex);
 }
 
-// Helper: Copy text to clipboard with feedback
+// Clipboard Copy
 async function copyToClipboard(text: string, button: HTMLButtonElement): Promise<void> {
   try {
     await navigator.clipboard.writeText(text);
@@ -31,6 +44,7 @@ async function copyToClipboard(text: string, button: HTMLButtonElement): Promise
   }
 }
 
+// Render Quotes UI
 function renderQuotes(page: number): void {
   const container = document.getElementById('quotes-container');
   const prevBtn = document.getElementById('prev-btn') as HTMLButtonElement;
@@ -46,21 +60,17 @@ function renderQuotes(page: number): void {
     return;
   }
 
-  // Use requestAnimationFrame to batch DOM updates
   requestAnimationFrame(() => {
-    // Show loading spinner and hide other elements
     loadingSpinner.classList.remove('is-hidden');
     container.classList.add('is-hidden');
     [prevBtn, nextBtn, darkModeToggle, pageNumber, pageButton, pageINFO].forEach((btn) => btn.classList.add('is-hidden'));
   });
 
-  // Simulate data fetching delay
   setTimeout(() => {
     const startIndex = (page - 1) * quotesPerPage;
     const endIndex = startIndex + quotesPerPage;
     quotesCache[page] = quotesCache[page] || fetchQuotesChunk(startIndex, endIndex);
 
-    // Clear and populate container
     requestAnimationFrame(() => {
       container.innerHTML = '';
       quotesCache[page].forEach((quote) => {
@@ -87,12 +97,10 @@ function renderQuotes(page: number): void {
         container.appendChild(card);
       });
 
-      // Handle pagination visibility
       const totalPages = Math.ceil(quotes.length / quotesPerPage);
       renderPagination(page, totalPages);
       updatePageInfo();
 
-      // Hide loading spinner and show elements
       requestAnimationFrame(() => {
         loadingSpinner.classList.add('is-hidden');
         container.classList.remove('is-hidden');
@@ -100,14 +108,13 @@ function renderQuotes(page: number): void {
           btn.classList.remove('is-hidden')
         );
 
-        // Save current page in localStorage
         localStorage.setItem('currentPage', page.toString());
       });
     });
   }, 500);
 }
 
-// Render pagination controls
+// Pagination UI
 function renderPagination(currentPage: number, totalPages: number): void {
   const prevBtn = document.getElementById('prev-btn') as HTMLButtonElement;
   const nextBtn = document.getElementById('next-btn') as HTMLButtonElement;
@@ -115,21 +122,11 @@ function renderPagination(currentPage: number, totalPages: number): void {
   prevBtn.disabled = currentPage === 1;
   nextBtn.disabled = currentPage === totalPages;
 
-  if (prevBtn.disabled) {
-    prevBtn.classList.add('blurred');
-  } else {
-    prevBtn.classList.remove('blurred');
-  }
-
-  if (nextBtn.disabled) {
-    nextBtn.classList.add('blurred');
-  } else {
-    nextBtn.classList.remove('blurred');
-  }
-
+  prevBtn.classList.toggle('blurred', prevBtn.disabled);
+  nextBtn.classList.toggle('blurred', nextBtn.disabled);
 }
 
-// Debounced pagination handler
+// Pagination Debounce
 let debounceTimeout: NodeJS.Timeout;
 
 function handlePaginationChange(change: number): void {
@@ -148,33 +145,18 @@ function handlePageInput(): void {
 
   if (isNaN(pageNumber) || pageNumber < 1 || pageNumber > totalPages) {
     const notificationContainer = document.getElementById('notification-container') as HTMLElement;
-
     requestAnimationFrame(() => {
-      if (notificationContainer) {
-        notificationContainer.innerHTML = `
-          <div class="notification is-danger is-light">
-            Please enter a valid page number between 1 and ${totalPages}
-          </div>
-        `;
-
-        setTimeout(() => {
-          requestAnimationFrame(() => {
-            if (notificationContainer) {
-              notificationContainer.innerHTML = '';
-            }
-          });
-        }, 2000);
-      }
+      notificationContainer.innerHTML = `
+        <div class="notification is-danger is-light">
+          Please enter a valid page number between 1 and ${totalPages}
+        </div>`;
+      setTimeout(() => (notificationContainer.innerHTML = ''), 2000);
     });
-
     return;
   }
 
   currentPage = pageNumber;
-
-  requestAnimationFrame(() => {
-    renderQuotes(currentPage);
-  });
+  renderQuotes(currentPage);
 }
 
 function updatePageInfo(): void {
@@ -183,17 +165,12 @@ function updatePageInfo(): void {
   const pageInput = document.getElementById('page-number-input') as HTMLInputElement;
 
   requestAnimationFrame(() => {
-    if (pageInfo) {
-      pageInfo.textContent = `Page ${currentPage} of ${totalPages}`;
-    }
-
-    if (pageInput) {
-      pageInput.value = currentPage.toString();
-    }
+    pageInfo.textContent = `Page ${currentPage} of ${totalPages}`;
+    pageInput.value = currentPage.toString();
   });
 }
 
-// Dark mode toggle
+// Dark Mode
 function toggleDarkMode(): void {
   const body = document.body;
   const isDarkMode = body.classList.contains('has-background-dark');
@@ -205,7 +182,6 @@ function toggleDarkMode(): void {
   if (toggleInput) toggleInput.checked = !isDarkMode;
 }
 
-// Apply saved or preferred theme
 function applyTheme(): void {
   const savedTheme = localStorage.getItem('theme');
   const prefersDarkScheme = window.matchMedia('(prefers-color-scheme: dark)').matches;
@@ -218,22 +194,22 @@ function applyTheme(): void {
   if (toggleInput) toggleInput.checked = isDarkMode;
 }
 
-// Initialize app
-function init(): void {
+// Init App
+async function init(): Promise<void> {
   applyTheme();
 
-  try {
-    if (!Array.isArray(quotes) || quotes.length === 0) {
-      throw new Error('No quotes found. Please check the quotes data.');
-    }
-    renderQuotes(currentPage);
-  } catch (error) {
-    console.error('Error rendering quotes:', error);
+  quotes = await loadQuotes();
+
+  if (!Array.isArray(quotes) || quotes.length === 0) {
+    console.error('Quotes data is empty or invalid.');
     const container = document.getElementById('quotes-container');
     if (container) {
       container.innerHTML = `<p class="has-text-danger">Failed to load quotes.</p>`;
     }
+    return;
   }
+
+  renderQuotes(currentPage);
 
   document.getElementById('prev-btn')?.addEventListener('click', () => handlePaginationChange(-1));
   document.getElementById('go-btn')?.addEventListener('click', handlePageInput);
@@ -241,5 +217,4 @@ function init(): void {
   document.getElementById('dark-mode-toggle')?.addEventListener('change', toggleDarkMode);
 }
 
-// Run the app
 init();
